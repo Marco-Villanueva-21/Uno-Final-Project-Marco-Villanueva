@@ -77,14 +77,15 @@ def drawnCard(add):
   else:
     print('You drew an invalid card! You must skip your turn!')
 
-#check each card in the user's deck
-for x in range (0, len(playerDeck)):
-  print (playerDeck[0+x])
-  if checkValid(playerDeck[0+x]):
-    valid = True
+  #check each card in the user's deck
+def checkDeck(playerDeck):
+  for x in range (0, len(playerDeck)):
+    print (playerDeck[0+x])
+    if checkValid(playerDeck[0+x]):
+      valid = True
 
 #if the user has a valid card, ask if they wish to play or draw
-if valid == True:
+if checkDeck(playerDeck):
   PD = input('Play or Draw?').lower()
 
   #enter a loop that loops back if the user inputs an invalid response
