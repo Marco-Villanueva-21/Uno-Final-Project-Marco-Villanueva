@@ -47,15 +47,15 @@ c3Deck = ', '.join(str(x) for x in cpu3Deck)
 
 face = str(random.choice(deck))
 print("The current card on the playing pile is:", face)
-print(face[0])
 
-#check if the user's deck has a valid card to play
+#function to check if the user's deck has a valid card to play
 def checkValid(playCard):
   if playCard[0] == face[0] or playCard[1] == face[1]:
     return True
   else:
     return False
 
+#function for drawing a card
 def drawnCard(add):
 
   #check if the drawn card is valid
@@ -80,44 +80,51 @@ def drawnCard(add):
 #check each card in the user's deck
 for x in range (0, len(playerDeck)):
   print (playerDeck[0+x])
-#   if checkValid(playerDeck[0+x]):
-#     valid = True
-#   else:
-#     valid = False
-    
-# if valid == True:
-#   PD = input('Play or Draw?').lower()
+  if checkValid(playerDeck[0+x]):
+    valid = True
 
-#   while played == False:
-#     if PD == 'play':
-#       playCard = input('What card would you like to play?: ').upper()
-    
-#       if playCard in playerDeck and checkValid(playCard):
-#         face = playCard
-#         playerDeck.remove(playCard)
-#         print('You played', playCard)
-#         print('The current card on the playing pile is:', face)
-#         pDeck = ', '.join(str(x) for x in playerDeck)
-#         print('Your deck is:', str(pDeck))
-#         played = True
-#       else:
-#         print('That is an invalid card')
-#         print('Your deck is:', playerDeck)
-#         played = False
-#     elif PD == 'draw':
-#       add = random.choice(deck)
-#       playerDeck.append(add)
-#       print('You drew a', add)
-#       played = True
-#       drawnCard(add)
+#if the user has a valid card, ask if they wish to play or draw
+if valid == True:
+  PD = input('Play or Draw?').lower()
 
-# #if user does not have a valid card, force to draw and ask if they want to play or skip
-# if valid == False:
-#   print('You do not have a valid card to play')
-#   add = random.choice(deck)
-#   playerDeck.append(add)
-#   print('You drew a', add)
-#   drawnCard(add)
+  #enter a loop that loops back if the user inputs an invalid response
+  while played == False:
+
+    #if the user inputs play, ask them which card they wish to play
+    if PD == 'play':
+      playCard = input('What card would you like to play?: ').upper()
+
+      #check if the card is in the user's deck and is a valid card
+      if playCard in playerDeck and checkValid(playCard):
+        face = playCard
+        playerDeck.remove(playCard)
+        print('You played', playCard)
+        print('The current card on the playing pile is:', face)
+        pDeck = ', '.join(str(x) for x in playerDeck)
+        print('Your deck is:', str(pDeck))
+        played = True
+
+      #if the card is not in the user's deck, ask them to input a valid card
+      else:
+        print('That is an invalid card')
+        print('Your deck is:', playerDeck)
+        played = False
+
+    #if the user inputs draw, draw a card
+    elif PD == 'draw':
+      add = random.choice(deck)
+      playerDeck.append(add)
+      print('You drew a', add)
+      played = True
+      drawnCard(add)
+
+#if user does not have a valid card, force to draw and ask if they want to play or skip
+if valid == False:
+  print('You do not have a valid card to play')
+  add = random.choice(deck)
+  playerDeck.append(add)
+  print('You drew a', add)
+  drawnCard(add)
        
 #skip cards will skip the next player
 #reverse cards will reverse the order of the players
