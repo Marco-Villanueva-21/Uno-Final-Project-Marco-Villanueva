@@ -1,6 +1,6 @@
 import random
 
-deck = ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'R10', 'RS', 'RR', 'R+2', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'BS', 'BR', 'B+2', 'Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6', 'Y7', 'Y8', 'Y9', 'Y10', 'YS', 'YR', 'Y+2', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8', 'G9', 'G10', 'GS', 'GR', 'G+2', 'W', 'W+4']
+deck = ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'R10', 'RS', 'RR', 'R2+', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'BS', 'BR', 'B2+', 'Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6', 'Y7', 'Y8', 'Y9', 'Y10', 'YS', 'YR', 'Y2+', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8', 'G9', 'G10', 'GS', 'GR', 'G2+', 'WC', 'W4+']
 
 playerDeck = []
 cpu1Deck = []
@@ -29,7 +29,7 @@ print('The rules are simple, you have to match the color or number of the card i
 print('Cards with an "S" at the end will skip the next player')
 print('Cards with an 'R' at the end will reverse the order of the players')
 print('Cards with a "W" will allow you to pick a color')
-print('Cards with a "+2" or "+4" will give the next player 2 or 4 cards if they cannot add on to the +2 or +4')
+print('Cards with a "2+" or "4+" will give the next player 2 or 4 cards if they cannot add on to the 2+ or 4+')
 
 #give user a random 7-card deck
 print('Here is your deck!')
@@ -77,16 +77,15 @@ def drawnCard(add):
   else:
     print('You drew an invalid card! You must skip your turn!')
 
-  #check each card in the user's deck
-def checkDeck(playerDeck):
-  for x in range (0, len(playerDeck)):
-    print (playerDeck[0+x])
-    if checkValid(playerDeck[0+x]):
-      valid = True
-
+#check each card in the user's deck
+for x in range (0, len(playerDeck)):
+  print (playerDeck[0+x])
+  if checkValid(playerDeck[0+x]):
+    valid = True
+    
 #if the user has a valid card, ask if they wish to play or draw
-if checkDeck(playerDeck):
-  PD = input('Play or Draw?').lower()
+if valid == True:
+  PD = input('Play or Draw?: ').lower()
 
   #enter a loop that loops back if the user inputs an invalid response
   while played == False:
@@ -108,7 +107,8 @@ if checkDeck(playerDeck):
       #if the card is not in the user's deck, ask them to input a valid card
       else:
         print('That is an invalid card')
-        print('Your deck is:', playerDeck)
+        pDeck = ', '.join(str(x) for x in playerDeck)
+        print('Your deck is:', str(pDeck))
         played = False
 
     #if the user inputs draw, draw a card
@@ -130,7 +130,7 @@ if valid == False:
 #skip cards will skip the next player
 #reverse cards will reverse the order of the players
 #wild cards will allow the user to pick a color
-#+2 or +4 cards will force the next player 2 or 4 cards
+#2+ or 4+ cards will force the next player 2 or 4 cards
 #if not, draw a card from the deck
 #ask user if they want to draw or play a card
 #ask user what card they want to play
