@@ -94,6 +94,7 @@ def rev():
 def plus():
   global turnNum
   global reverse
+  global playTurn
   if playCard[1] == '+':
     if playCard[2] == '2' or playCard[2] == '4':
       turnNum = turnNum + (reverse*1)
@@ -126,8 +127,8 @@ def plus():
           cDeck = random.choice(deck)
           cpu3Deck.append(cDeck)
         print('CPU3 drew two cards!')
-      turnNum = turnNum + (reverse*1)
-      print(turn, 'had their turn skipped!')
+      playTurn = currentTurn()
+      print(playTurn, 'had their turn skipped!')
       
 
 #enter a game loop that loops back after the game ends and the user wishes to play again
