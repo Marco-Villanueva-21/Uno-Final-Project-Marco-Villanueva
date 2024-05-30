@@ -2,7 +2,8 @@ import random
 
 deck = ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'R10', 'RS', 'RR', 'R2+', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'BS', 'BR', 'B2+', 'Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6', 'Y7', 'Y8', 'Y9', 'Y10', 'YS', 'YR', 'Y2+', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8', 'G9', 'G10', 'GS', 'GR', 'G2+', 'WC', 'W4+']
 
-special = ['S', 'R', '2+', 'C', '4+']
+special = ['S', 'R', '2', 'C', '4']
+colors = ['R', 'B', 'Y', 'G']
 
 playerDeck = []
 cpu1Deck = []
@@ -109,27 +110,46 @@ if currentTurn() == 'user':
       #if the user inputs play, ask them which card they wish to play
       if PD == 'play':
         playCard = input('What card would you like to play?: ').upper()
-  
-        #check if the card is in the user's deck and is a valid card
-        if playCard in playerDeck and checkValid(playCard):
-          face = playCard
-          playerDeck.remove(playCard)
-          print('You played', playCard)
 
-          if playCard[1] in special:
-            print('you played a special card!')
-          
-          print('The current card on the playing pile is:', face)
-          pDeck = ', '.join(str(x) for x in playerDeck)
-          print('Your deck is:', str(pDeck))
-          played = True
-  
         #if the card is not in the user's deck, ask them to input a valid card
-        else:
+        if playCard not in playerDeck and playCard[0] != 'W':
           print('That is an invalid card')
           pDeck = ', '.join(str(x) for x in playerDeck)
           print('Your deck is:', str(pDeck))
           played = False
+  
+        #check if the card is in the user's deck
+        if playCard in playerDeck:
+
+          #check if the played card is a wild card
+          chooseColor = False
+          if playCard[0] == 'W':
+            print('You played a Wild Card!')
+            while chooseColor == False:
+              color = input('What color would you like to change it to?: ').upper()
+              if color in colors:
+                face = color + 'C'
+                print('You changed the color to', color)
+                print('The current card on the playing pile is:', face)
+                chooseColor = True
+                played = True
+              else: 
+                print('You picked an invalid color! Please try again!')
+                chooseColor = False
+
+          #otherwise, check if the card is playable
+          elif checkValid(playCard):
+            face = playCard
+            playerDeck.remove(playCard)
+            print('You played', playCard)
+  
+            if playCard[1] in special:
+              print('you played a special card!')
+            
+            print('The current card on the playing pile is:', face)
+            pDeck = ', '.join(str(x) for x in playerDeck)
+            print('Your deck is:', str(pDeck))
+            played = True
   
       #if the user inputs draw, draw a card
       elif PD == 'draw':
