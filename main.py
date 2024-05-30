@@ -1,8 +1,9 @@
 import random
+import time
 
-deck = ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'R10', 'RS', 'RR', 'R2+', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'BS', 'BR', 'B2+', 'Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6', 'Y7', 'Y8', 'Y9', 'Y10', 'YS', 'YR', 'Y2+', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8', 'G9', 'G10', 'GS', 'GR', 'G2+', 'WC', 'W4+']
+deck = ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'R10', 'RS', 'RR', 'R+2', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'BS', 'BR', 'B+2', 'Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6', 'Y7', 'Y8', 'Y9', 'Y10', 'YS', 'YR', 'Y+2', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8', 'G9', 'G10', 'GS', 'GR', 'G+2', 'WC', 'W+4']
 
-special = ['S', 'R']
+special = ['S', 'R', '+']
 colors = ['R', 'B', 'Y', 'G']
 
 print('Welcome to UNO!')
@@ -10,7 +11,7 @@ print('\nThe rules are simple, you have to match the color or number of the card
 print('Cards with an "S" at the end will skip the next player')
 print('Cards with an 'R' at the end will reverse the order of the players')
 print('Cards with a "W" will allow you to pick a color')
-print('Cards with a "2+" or "4+" will give the next player 2 or 4 cards if they cannot add on to the 2+ or 4+')
+print('Cards with a "+2" or "+4" will give the next player 2 or 4 cards if they cannot add on to the +2 or +4')
 
 gameExit = True
 gameLoop = True
@@ -23,10 +24,10 @@ print("The current card on the playing pile is:", face)
 #decide whose turn it currently is
 def currentTurn():
   global turnNum
-  if turnNum > 4:
+  if turnNum > 3:
     turnNum = 0
   if turnNum < 0:
-    turnNum = 4
+    turnNum = 3
   playTurn = turn[turnNum]
   return playTurn
   
@@ -93,39 +94,40 @@ def rev():
 def plus():
   global turnNum
   global reverse
-  if playCard[1] == '2' or playCard[1] == '4':
-    turnNum = turnNum + (reverse*1)
-
-    #user is hit
-    if currentTurn() == 'user':
-      for x in range(0, int(playCard[1])):
-        cDeck = random.choice(deck)
-        playerDeck.append(cDeck)
-        print('You drew', cDeck)
-      print('Your turn was skipped!')
-      
-    #CPU1 is hit
-    if currentTurn() == 'cpu1':
-      for x in range(0,int(playCard[1])):
-        cDeck = random.choice(deck)
-        cpu1Deck.append(cDeck)
-      print('CPU1 drew two cards!')
-
-    #CPU2 is hit
-    if currentTurn() == 'cpu2':
-      for x in range(0,int(playCard[1])):
-        cDeck = random.choice(deck)
-        cpu2Deck.append(cDeck)
-      print('CPU2 drew two cards!')
-
-    #CPU3 is hit
-    if currentTurn() == 'cpu3':
-      for x in range(0,int(playCard[1])):
-        cDeck = random.choice(deck)
-        cpu3Deck.append(cDeck)
-      print('CPU3 drew two cards!')
-    turnNum = turnNum + (reverse*1)
-    print(turn, 'had their turn skipped!')
+  if playCard[1] == '+':
+    if playCard[2] == '2' or playCard[2] == '4':
+      turnNum = turnNum + (reverse*1)
+  
+      #user is hit
+      if currentTurn() == 'user':
+        for x in range(0, int(playCard[2])):
+          cDeck = random.choice(deck)
+          playerDeck.append(cDeck)
+          print('You drew', cDeck)
+        print('Your turn was skipped!')
+        
+      #CPU1 is hit
+      if currentTurn() == 'cpu1':
+        for x in range(0,int(playCard[2])):
+          cDeck = random.choice(deck)
+          cpu1Deck.append(cDeck)
+        print('CPU1 drew two cards!')
+  
+      #CPU2 is hit
+      if currentTurn() == 'cpu2':
+        for x in range(0,int(playCard[2])):
+          cDeck = random.choice(deck)
+          cpu2Deck.append(cDeck)
+        print('CPU2 drew two cards!')
+  
+      #CPU3 is hit
+      if currentTurn() == 'cpu3':
+        for x in range(0,int(playCard[2])):
+          cDeck = random.choice(deck)
+          cpu3Deck.append(cDeck)
+        print('CPU3 drew two cards!')
+      turnNum = turnNum + (reverse*1)
+      print(turn, 'had their turn skipped!')
       
 
 #enter a game loop that loops back after the game ends and the user wishes to play again
@@ -248,14 +250,17 @@ while gameExit == True:
     if currentTurn() == 'cpu1':
       print("It is CPU1's turn!")
       print("CPU1 has", len(cpu1Deck), "cards")
+      turnNum = turnNum + (1*reverse)
 
     if currentTurn() == 'cpu2':
       print("It is CPU2's turn!")
       print("CPU2 has", len(cpu2Deck), "cards")
+      turnNum = turnNum + (1*reverse)
 
     if currentTurn() == 'cpu3':
       print("It is CPU3's turn!")
       print("CPU3 has", len(cpu3Deck), "cards")
+      turnNum = turnNum + (1*reverse)
   #make next computer player play a valid card from their deck and tell the user their placed card
   #if a player reaches zero cards, display the winner
     if len(playerDeck) == 0:
