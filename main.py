@@ -81,62 +81,64 @@ def drawnCardCPU(add):
   else:
     print(playTurn, 'skipped their turn!')
 
-def cpuTurn(cpuDeck):
-  global turnNum
+# def cpuTurn(cpuDeck):
+#   global turnNum
   
-  #check each card in the cpu's deck
-  valid = False
-  for x in range (0, len(cpuDeck)):
-    if checkValid(cpuDeck[0+x]):
-      valid = True
+#   #check each card in the cpu's deck
+#   valid = False
+#   for x in range (0, len(cpuDeck)):
+#     if checkValid(cpuDeck[0+x]):
+#       valid = True
 
-  #if the user has a valid card
-  if valid == True:
+#   #if the user has a valid card
+#   if valid == True:
 
-        #check if the card is in the user's deck
-        if special in playerDeck:
+#         #check if the card is in the user's deck
+#         if special in playerDeck:
 
-          #check if the played card is a wild card
-          skip()
-          rev()
-          plus()
+#           if playCard[0] == 'W' or playCard[1] in special:
+
+#           #check if the played card is a wild card
+#           skip()
+#           rev()
+#           plus()
 
 
-              #if the user inputs a valid color, change the card to that color
-              if color in colors:
-                face = color + 'C'
-                print('You changed the color to', color)
-                print('The current card on the playing pile is:', face)
-                chooseColor = True
-                played = True
-              else: 
-                print('You picked an invalid color! Please try again!')
-                chooseColor = False
+#               #if the user inputs a valid color, change the card to that color
+#               if color in colors:
+#                 face = color + 'C'
+#                 print('You changed the color to', color)
+#                 print('The current card on the playing pile is:', face)
+#                 chooseColor = True
+#                 played = True
+#               else: 
+#                 print('You picked an invalid color! Please try again!')
+#                 chooseColor = False
 
-          #otherwise, check if the card is playable
-          elif checkValid(playCard):
-            face = playCard
-            playerDeck.remove(playCard)
-            print('You played', playCard)
+#           #otherwise, check if the card is playable
+#           elif checkValid(playCard):
+#             face = playCard
+#             playerDeck.remove(playCard)
+#             print('You played', playCard)
 
-            if playCard[1] in special or len(playCard) == 2:
-              print('you played a special card!')
-              skip()
-              rev()
-              plus()
+#             if playCard[1] in special or len(playCard) == 2:
+#               print('you played a special card!')
+#               skip()
+#               rev()
+#               plus()
 
-            print('The current card on the playing pile is:', face)
-            pDeck = ', '.join(str(x) for x in playerDeck)
-            print('Your deck is:', str(pDeck))
-            played = True
+#             print('The current card on the playing pile is:', face)
+#             pDeck = ', '.join(str(x) for x in playerDeck)
+#             print('Your deck is:', str(pDeck))
+#             played = True
 
-  #if cpu does not have a valid card, force to draw and play if possible, otherwise skip their turn
-  if valid == False:
-    add = random.choice(deck)
-    cpuDeck.append(add)
-    print(playTurn, 'drew a card!')
-    drawnCard(add)
-  turnNum = turnNum + (1*reverse)
+#   #if cpu does not have a valid card, force to draw and play if possible, otherwise skip their turn
+#   if valid == False:
+#     add = random.choice(deck)
+#     cpuDeck.append(add)
+#     print(playTurn, 'drew a card!')
+#     drawnCard(add)
+#   turnNum = turnNum + (1*reverse)
 
 #define the play again checker at the end of the game
 def playMore():
@@ -152,6 +154,27 @@ def playMore():
     else:
       playAgain = False
       
+#define wild cards used by user (user can choose a color)
+def wild():
+  chooseColor = False
+  
+  #wild cards will allow the user to pick a color
+  print('You played a Wild Card!')
+  while chooseColor == False:
+    color = input('What color would you like to change it to? (R, G, B, Y): ').upper()
+
+    #if the user inputs a valid color, change the card to that color
+    if color in colors:
+      face = color + 'C'
+      playerDeck.remove(playCard)
+      print('You changed the color to', color)
+      print('The current card on the playing pile is:', face)
+      chooseColor = True
+      played = True
+    else: 
+      print('You picked an invalid color! Please try again!')
+      chooseColor = False
+          
 #define skip cards (the next player's turn is skipped)
 def skip():
   global turnNum
@@ -227,7 +250,7 @@ while gameExit == True:
   playAgainCheck = False
 
    #give the user and 3 computer players a 7-card deck
-  for x in range (0,7):
+  for x in range (0,1):
     cDeck = random.choice(deck)
     playerDeck.append(cDeck)
   for x in range (0,7):
@@ -286,21 +309,9 @@ while gameExit == True:
               #check if the played card is a wild card
               chooseColor = False
               if playCard[0] == 'W':
-                #wild cards will allow the user to pick a color
-                print('You played a Wild Card!')
-                while chooseColor == False:
-                  color = input('What color would you like to change it to? (R, G, B, Y): ').upper()
-    
-                  #if the user inputs a valid color, change the card to that color
-                  if color in colors:
-                    face = color + 'C'
-                    print('You changed the color to', color)
-                    print('The current card on the playing pile is:', face)
-                    chooseColor = True
-                    played = True
-                  else: 
-                    print('You picked an invalid color! Please try again!')
-                    chooseColor = False
+                wild()
+                if len(playCard) == 2:
+                  plus()
     
               #otherwise, check if the card is playable
               elif checkValid(playCard):
@@ -325,8 +336,8 @@ while gameExit == True:
             add = random.choice(deck)
             playerDeck.append(add)
             print('You drew a', add)
-            played = True
             drawnCard(add)
+            played = True
 
           #if the user does not input a valid response, loop back to played
           else:
@@ -341,40 +352,47 @@ while gameExit == True:
         print('You drew a', add)
         drawnCard(add)
       turnNum = turnNum + (1*reverse)
+
+      #if the user reaches zero cards, display the winner and ask to play again
+      if len(playerDeck) == 0:
+        print('You win!')
+        gameLoop = False
+        playAgain = input('Would you like to play again? (Y/N): ').upper()
+        playMore()
     
     if currentTurn() == 'CPU1':
       print("It is CPU1's turn!")
       print("CPU1 has", len(cpu1Deck), "card(s)")
       turnNum = turnNum + (1*reverse)
 
+      #if CPU1 reaches zero cards, display the winner and ask to play again
+      if len(cpu1Deck) == 0:
+        print('CPU1 wins!')
+        gameLoop = False
+        playAgain = input('Would you like to play again? (Y/N): ').upper()
+        playMore()
+
     if currentTurn() == 'CPU2':
       print("It is CPU2's turn!")
       print("CPU2 has", len(cpu2Deck), "card(s)")
       turnNum = turnNum + (1*reverse)
 
+      #if CPU2 reaches zero cards, display the winner and ask to play again
+      if len(cpu2Deck) == 0:
+        print('CPU2 wins!')
+        gameLoop = False
+        playAgain = input('Would you like to play again? (Y/N): ').upper()
+        playMore()
+
     if currentTurn() == 'CPU3':
       print("It is CPU3's turn!")
       print("CPU3 has", len(cpu3Deck), "card(s)")
       turnNum = turnNum + (1*reverse)
+
+      #if the CPU3 reaches zero cards, display the winner and ask to play again
+      if len(cpu3Deck) == 0:
+        print('CPU3 wins!')
+        gameLoop = False
+        playAgain = input('Would you like to play again? (Y/N): ').upper()
+        playMore()
   #make next computer player play a valid card from their deck and tell the user their placed card
-  #if a player reaches zero cards, display the winner
-    if len(playerDeck) == 0:
-      print('You win!')
-      gameLoop = False
-      playAgain = input('Would you like to play again? (Y/N): ').upper()
-      playMore()
-    if len(cpu1Deck) == 0:
-      print('CPU1 wins!')
-      gameLoop = False
-      playAgain = input('Would you like to play again? (Y/N): ').upper()
-      playMore()
-    if len(cpu2Deck) == 0:
-      print('CPU2 wins!')
-      gameLoop = False
-      playAgain = input('Would you like to play again? (Y/N): ').upper()
-      playMore()
-    if len(cpu3Deck) == 0:
-      print('CPU3 wins!')
-      gameLoop = False
-      playAgain = input('Would you like to play again? (Y/N): ').upper()
-      playMore()
