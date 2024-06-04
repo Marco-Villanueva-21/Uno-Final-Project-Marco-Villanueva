@@ -4,6 +4,7 @@ import time
 deck = ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'R10', 'RS', 'RR', 'R+2', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'BS', 'BR', 'B+2', 'Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6', 'Y7', 'Y8', 'Y9', 'Y10', 'YS', 'YR', 'Y+2', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8', 'G9', 'G10', 'GS', 'GR', 'G+2', 'WC', 'W+4']
 
 special = ['S', 'R', '+']
+CPUspecial = ['S', 'R', '+', 'W']
 colors = ['R', 'B', 'Y', 'G']
 
 print('Welcome to UNO!')
@@ -68,6 +69,7 @@ def drawnCard(add):
       print('You drew an invalid card! You must skip your turn!')
       validResponse = True
 
+#define CPU's ability to draw a card
 def drawnCardCPU(add):
   global playTurn
   
@@ -79,6 +81,10 @@ def drawnCardCPU(add):
 
   else:
     print(playTurn, 'skipped their turn!')
+
+#define function to count how many cards of each color the CPU has
+def countColor():
+  
 
 # def cpuTurn(cpuDeck):
 #   global turnNum
@@ -93,7 +99,7 @@ def drawnCardCPU(add):
 #   if valid == True:
 
 #         #check if the card is in the user's deck
-#         if special in playerDeck:
+#         if CPUspecial in playerDeck:
 
 #           if playCard[0] == 'W' or playCard[1] in special:
 
