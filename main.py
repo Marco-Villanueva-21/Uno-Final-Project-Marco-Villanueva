@@ -33,7 +33,7 @@ def currentTurn():
   
 #function to check if the user's deck has a valid card to play
 def checkValid(playCard):
-  if playCard[0] == face[0] or playCard[1] == face[1]:
+  if playCard[0] == face[0] or playCard[1] == face[1] or playCard[0] == 'W':
     return True
   else:
     return False
@@ -83,8 +83,23 @@ def drawnCardCPU(add):
     print(playTurn, 'skipped their turn!')
 
 #define function to count how many cards of each color the CPU has
-def countColor():
+def countColor(cpuDeck):
+  redCount = 0
+  blueCount = 0
+  greenCount = 0
+  yellowCount = 0
   
+  for x in range(0, len(cpuDeck)):
+    if cpuDeck[x][0] == 'R':
+      redCount = redCount + 1
+    if cpuDeck[x][0] == 'B':
+      blueCount = blueCount + 1
+    if cpuDeck[x][0] == 'G':
+      greenCount = greenCount + 1
+    if cpuDeck[x][0] == 'Y':
+      yellowCount = yellowCount + 1
+
+  return redCount, blueCount, greenCount, yellowCount
 
 # def cpuTurn(cpuDeck):
 #   global turnNum
