@@ -14,7 +14,6 @@ print('Cards with a "W" will allow you to pick a color')
 print('Cards with a "+2" or "+4" will give the next player 2 or 4 cards if they cannot add on to the +2 or +4')
 
 gameExit = True
-gameLoop = True
 
 #tell user what card is on top of the playing pile
 
@@ -144,11 +143,14 @@ def drawnCardCPU(add):
 def playMore():
   global playAgainCheck
   global playAgain
+  global gameExit
   while not playAgainCheck:
     if playAgain == 'Y':
+      print("Let's play again!")
       playAgainCheck = True
       gameExit = True
     elif playAgain == 'N':
+      print('\nThanks for playing!')
       playAgainCheck = True
       gameExit = False
     else:
@@ -248,9 +250,10 @@ while gameExit == True:
   played = False
   playAgain = 'Y'
   playAgainCheck = False
+  gameLoop = True
 
    #give the user and 3 computer players a 7-card deck
-  for x in range (0,1):
+  for x in range (0,7):
     cDeck = random.choice(deck)
     playerDeck.append(cDeck)
   for x in range (0,7):
@@ -359,8 +362,9 @@ while gameExit == True:
         gameLoop = False
         playAgain = input('Would you like to play again? (Y/N): ').upper()
         playMore()
-    
-    if currentTurn() == 'CPU1':
+
+    #enter CPU1's turn if currentTurn function returns CPU1
+    elif currentTurn() == 'CPU1':
       print("It is CPU1's turn!")
       print("CPU1 has", len(cpu1Deck), "card(s)")
       turnNum = turnNum + (1*reverse)
@@ -372,7 +376,8 @@ while gameExit == True:
         playAgain = input('Would you like to play again? (Y/N): ').upper()
         playMore()
 
-    if currentTurn() == 'CPU2':
+    #enter CPU2's turn if currentTurn function returns CPU2
+    elif currentTurn() == 'CPU2':
       print("It is CPU2's turn!")
       print("CPU2 has", len(cpu2Deck), "card(s)")
       turnNum = turnNum + (1*reverse)
@@ -384,7 +389,8 @@ while gameExit == True:
         playAgain = input('Would you like to play again? (Y/N): ').upper()
         playMore()
 
-    if currentTurn() == 'CPU3':
+    #enter CPU3's turn if currentTurn function returns CPU3
+    elif currentTurn() == 'CPU3':
       print("It is CPU3's turn!")
       print("CPU3 has", len(cpu3Deck), "card(s)")
       turnNum = turnNum + (1*reverse)
