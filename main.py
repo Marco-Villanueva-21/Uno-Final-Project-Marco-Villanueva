@@ -3,7 +3,7 @@ import time
 
 deck = ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'R10', 'RS', 'RR', 'R+2', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'BS', 'BR', 'B+2', 'Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6', 'Y7', 'Y8', 'Y9', 'Y10', 'YS', 'YR', 'Y+2', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8', 'G9', 'G10', 'GS', 'GR', 'G+2', 'WC', 'W+4']
 
-special = ['S', 'R', '+']
+special = ['S', 'R', '+', 'C']
 CPUspecial = ['S', 'R', '+', 'W']
 colors = ['R', 'B', 'Y', 'G']
 
@@ -40,6 +40,8 @@ def checkValid(playCard):
 
 #function for drawing a card
 def drawnCard(add):
+  global face
+  
   validResponse = False
   while not validResponse:
     
@@ -50,6 +52,15 @@ def drawnCard(add):
       #player asks to play
       if PD == 'play':
         face = add
+
+          #check if the second character is in the special list or has three characters (meaning it must be a +2 or +4)
+        if add[1] in special or len(add) == 2:
+          print('You played a special card!')
+          skip(add)
+          rev(add)
+          plus(add)
+
+        #card is played
         playerDeck.remove(add)
         print('You played', add)
         print('The current card on the playing pile is:', face)
@@ -62,7 +73,7 @@ def drawnCard(add):
 
       else:
         print('You inputted an invalid response, please try again')
-        validResponses = False
+        validResponse = False
   
     #if the card is invalid, skip the player's turn
     else:
@@ -114,7 +125,7 @@ def countColor(cpuDeck):
 #   if valid == True:
 
 #         #check if the card is in the user's deck
-#         if CPUspecial in playerDeck:
+#         if special in playerDeck:
 
 #           if playCard[0] == 'W' or playCard[1] in special:
 
@@ -178,28 +189,30 @@ def playMore():
       playAgain = False
       
 #define wild cards used by user (user can choose a color)
-def wild():
+def wild(playCard):
   chooseColor = False
-  
-  #wild cards will allow the user to pick a color
-  print('You played a Wild Card!')
-  while chooseColor == False:
-    color = input('What color would you like to change it to? (R, G, B, Y): ').upper()
 
-    #if the user inputs a valid color, change the card to that color
-    if color in colors:
-      face = color + 'C'
-      playerDeck.remove(playCard)
-      print('You changed the color to', color)
-      print('The current card on the playing pile is:', face)
-      chooseColor = True
-      played = True
-    else: 
-      print('You picked an invalid color! Please try again!')
-      chooseColor = False
+  if playCard[1] == 'W':
+    
+    #wild cards will allow the user to pick a color
+    print('You played a Wild Card!')
+    while chooseColor == False:
+      color = input('What color would you like to change it to? (R, G, B, Y): ').upper()
+  
+      #if the user inputs a valid color, change the card to that color
+      if color in colors:
+        face = color + 'C'
+        playerDeck.remove(playCard)
+        print('You changed the color to', color)
+        print('The current card on the playing pile is:', face)
+        chooseColor = True
+        played = True
+      else: 
+        print('You picked an invalid color! Please try again!')
+        chooseColor = False
           
 #define skip cards (the next player's turn is skipped)
-def skip():
+def skip(playCard):
   global turnNum
   global playTurn
   if playCard[1] == 'S':
@@ -208,14 +221,14 @@ def skip():
     print(playTurn, 'had their turn skipped!')
 
 #define reverse cards (the order of the players reverse)
-def rev():
+def rev(playCard):
   global reverse
   if playCard[1] == 'R':
     reverse = reverse*(-1)
     print('The order of the players has been reversed!')
 
 #define plus cards (2 or 4 cards are forced to be added to the next player's deck and the next player's turn is skipped)
-def plus():
+def plus(playCard):
   global turnNum
   global reverse
   global playTurn
@@ -325,17 +338,17 @@ while gameExit == True:
               print('That is an invalid card')
               pDeck = ', '.join(str(x) for x in playerDeck)
               print('Your deck is:', str(pDeck))
+              print('The current card on the playing pile is:', face)
               played = False
       
             #check if the card is in the user's deck
             if playCard in playerDeck:
     
               #check if the played card is a wild card
-              chooseColor = False
               if playCard[0] == 'W':
-                wild()
+                wild(playCard)
                 if len(playCard) == 2:
-                  plus()
+                  plus(playCard)
     
               #otherwise, check if the card is playable
               elif checkValid(playCard):
@@ -346,9 +359,9 @@ while gameExit == True:
                 #check if the second character is in the special list or has three characters (meaning it must be a +2 or +4)
                 if playCard[1] in special or len(playCard) == 2:
                   print('You played a special card!')
-                  skip()
-                  rev()
-                  plus()
+                  skip(playCard)
+                  rev(playCard)
+                  plus(playCard)
                 
                 print('The current card on the playing pile is:', face)
                 pDeck = ', '.join(str(x) for x in playerDeck)
