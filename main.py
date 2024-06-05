@@ -3,7 +3,7 @@ import time
 
 deck = ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'R10', 'RS', 'RR', 'R+2', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'BS', 'BR', 'B+2', 'Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6', 'Y7', 'Y8', 'Y9', 'Y10', 'YS', 'YR', 'Y+2', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8', 'G9', 'G10', 'GS', 'GR', 'G+2', 'WC', 'W+4']
 
-special = ['S', 'R', '+', 'C']
+special = ['S', 'R', '+']
 CPUspecial = ['S', 'R', '+', 'W']
 colors = ['R', 'B', 'Y', 'G']
 
@@ -53,17 +53,25 @@ def drawnCard(add):
       if PD == 'play':
         face = add
 
+        #check if the drawn card is a wild card
+        if add[0] == 'W' and len(add) == 3:
+          face = wild(add)
+          plus(add)
+          
+        elif add[0] == 'W':
+          wild(add)
+
           #check if the second character is in the special list or has three characters (meaning it must be a +2 or +4)
-        if add[1] in special or len(add) == 2:
+        elif add[1] in special: 
           print('You played a special card!')
           skip(add)
           rev(add)
           plus(add)
 
-        #card is played
-        playerDeck.remove(add)
-        print('You played', add)
-        print('The current card on the playing pile is:', face)
+        #basic card is played
+        else:
+          print('You played', add)
+          print('The current card on the playing pile is:', face)
         validResponse = True
   
       #player asks to skip
@@ -192,7 +200,7 @@ def playMore():
 def wild(playCard):
   chooseColor = False
 
-  if playCard[1] == 'W':
+  if playCard[0] == 'W':
     
     #wild cards will allow the user to pick a color
     print('You played a Wild Card!')
@@ -207,6 +215,7 @@ def wild(playCard):
         print('The current card on the playing pile is:', face)
         chooseColor = True
         played = True
+        return face
       else: 
         print('You picked an invalid color! Please try again!')
         chooseColor = False
@@ -249,21 +258,25 @@ def plus(playCard):
         for x in range(0,int(playCard[2])):
           cDeck = random.choice(deck)
           cpu1Deck.append(cDeck)
-        print('CPU1 drew two cards!')
+        print('\nCPU1 drew', int(playCard[2]), 'cards!')
+        print("CPU1 has", len(cpu1Deck), "card(s)")
   
       #CPU2 is hit
       if currentTurn() == 'CPU2':
         for x in range(0,int(playCard[2])):
           cDeck = random.choice(deck)
           cpu2Deck.append(cDeck)
-        print('CPU2 drew two cards!')
+        print('\nCPU2 drew', int(playCard[2]), 'cards!')
+        print("CPU2 has", len(cpu2Deck), "card(s)")
   
       #CPU3 is hit
       if currentTurn() == 'CPU3':
         for x in range(0,int(playCard[2])):
           cDeck = random.choice(deck)
           cpu3Deck.append(cDeck)
-        print('CPU3 drew two cards!')
+        print('\nCPU3 drew', int(playCard[2]), 'cards!')
+        print("CPU3 has", len(cpu3Deck), "card(s)")
+        
       playTurn = currentTurn()
       print(playTurn, 'had their turn skipped!')
       
@@ -344,11 +357,14 @@ while gameExit == True:
             #check if the card is in the user's deck
             if playCard in playerDeck:
     
-              #check if the played card is a wild card
-              if playCard[0] == 'W':
-                wild(playCard)
-                if len(playCard) == 2:
-                  plus(playCard)
+              #check if the played card is a wild+4
+              if playCard[0] == 'W' and len(playCard) == 3:
+                face = wild(playCard)
+                plus(playCard)
+
+              #check if the played card is a wild 
+              elif playCard[0] == 'W':
+                face = wild(playCard)
     
               #otherwise, check if the card is playable
               elif checkValid(playCard):
@@ -357,7 +373,7 @@ while gameExit == True:
                 print('You played', playCard)
 
                 #check if the second character is in the special list or has three characters (meaning it must be a +2 or +4)
-                if playCard[1] in special or len(playCard) == 2:
+                if playCard[1] in special:
                   print('You played a special card!')
                   skip(playCard)
                   rev(playCard)
@@ -370,7 +386,8 @@ while gameExit == True:
       
           #if the user inputs draw, draw a card
           elif PlayDraw == 'draw':
-            add = random.choice(deck)
+            # add = random.choice(deck)
+            add = 'W+4'
             playerDeck.append(add)
             print('You drew a', add)
             drawnCard(add)
@@ -382,7 +399,7 @@ while gameExit == True:
             played = False
             
       #if user does not have a valid card, force to draw and ask if they want to play or skip
-      if valid == False:
+      if not valid:
         print('You do not have a valid card to play')
         add = random.choice(deck)
         playerDeck.append(add)
@@ -399,7 +416,7 @@ while gameExit == True:
 
     #enter CPU1's turn if currentTurn function returns CPU1
     elif currentTurn() == 'CPU1':
-      print("It is CPU1's turn!")
+      print("\nIt is CPU1's turn!")
       print("CPU1 has", len(cpu1Deck), "card(s)")
       turnNum = turnNum + (1*reverse)
 
@@ -412,7 +429,7 @@ while gameExit == True:
 
     #enter CPU2's turn if currentTurn function returns CPU2
     elif currentTurn() == 'CPU2':
-      print("It is CPU2's turn!")
+      print("\nIt is CPU2's turn!")
       print("CPU2 has", len(cpu2Deck), "card(s)")
       turnNum = turnNum + (1*reverse)
 
@@ -425,7 +442,7 @@ while gameExit == True:
 
     #enter CPU3's turn if currentTurn function returns CPU3
     elif currentTurn() == 'CPU3':
-      print("It is CPU3's turn!")
+      print("\nIt is CPU3's turn!")
       print("CPU3 has", len(cpu3Deck), "card(s)")
       turnNum = turnNum + (1*reverse)
 
