@@ -1,25 +1,20 @@
 import random
 import time
 
-deck = ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'R10', 'RS', 'RR', 'R+2', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'BS', 'BR', 'B+2', 'Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6', 'Y7', 'Y8', 'Y9', 'Y10', 'YS', 'YR', 'Y+2', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8', 'G9', 'G10', 'GS', 'GR', 'G+2', 'WC', 'W+4']
+deck = ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'RS', 'RR', 'R+2', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'BS', 'BR', 'B+2', 'Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6', 'Y7', 'Y8', 'Y9', 'YS', 'YR', 'Y+2', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8', 'G9', 'GS', 'GR', 'G+2', 'WC', 'W+4']
 
 special = ['S', 'R', '+']
 CPUspecial = ['S', 'R', '+', 'W']
 colors = ['R', 'B', 'Y', 'G']
 
 print('Welcome to UNO!')
-print('\nThe rules are simple, you have to match the color or number of the card in your hand with the card and be the first player to get rid of all of your cards. Be sure to call UNO if you only have one card left!') 
+print('\nThe rules are simple, you have to match the color or number of the card in your hand with the playing pile card and be the first player to get rid of all of your cards. Be sure to call UNO if you only have one card left!') 
 print('Cards with an "S" at the end will skip the next player')
 print('Cards with an 'R' at the end will reverse the order of the players')
 print('Cards with a "W" will allow you to pick a color')
 print('Cards with a "+2" or "+4" will give the next player 2 or 4 cards if they cannot add on to the +2 or +4')
 
 gameExit = True
-
-#tell user what card is on top of the playing pile
-
-face = str(random.choice(deck))
-print("The current card on the playing pile is:", face)
 
 #decide whose turn it currently is
 def currentTurn():
@@ -33,7 +28,10 @@ def currentTurn():
   
 #function to check if the user's deck has a valid card to play
 def checkValid(playCard):
-  if playCard[0] == face[0] or playCard[1] == face[1] or playCard[0] == 'W':
+  if len(playCard) == 3 and len(face) == 3:
+    if playCard[3] == face[3]:
+      return True
+  elif playCard[0] == face[0] or playCard[1] == face[1] or playCard[0] == 'W':
     return True
   else:
     return False
@@ -247,7 +245,14 @@ def plus(playCard):
   
       #user is hit
       if currentTurn() == 'user':
-        for x in range(0, int(playCard[2])):
+        if '+' in playerDeck:
+          defend = input('You have a +2 or +4 card! Defend or draw?: ').lower()
+
+          if defend == 'defend':
+            turnNum = turnNum + (reverse*1)
+            
+        else:
+          for x in range(0, int(playCard[2])):
           cDeck = random.choice(deck)
           playerDeck.append(cDeck)
           print('You drew', cDeck)
@@ -319,6 +324,11 @@ while gameExit == True:
   #give user a random 7-card deck
   print('\nHere is your deck!')
   print(str(pDeck))
+
+  #tell user what card is on top of the playing pile
+
+  face = str(random.choice(deck))
+  print("The current card on the playing pile is:", face)
 
   while gameLoop:
     if currentTurn() == 'user':
