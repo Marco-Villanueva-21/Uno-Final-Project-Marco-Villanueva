@@ -28,10 +28,7 @@ def currentTurn():
   
 #function to check if the user's deck has a valid card to play
 def checkValid(playCard):
-  if len(playCard) == 3 and len(face) == 3:
-    if playCard[3] == face[3]:
-      return True
-  elif playCard[0] == face[0] or playCard[1] == face[1] or playCard[0] == 'W':
+  if playCard[0] == face[0] or playCard[1] == face[1] or playCard[0] == 'W':
     return True
   else:
     return False
@@ -239,52 +236,104 @@ def plus(playCard):
   global turnNum
   global reverse
   global playTurn
-  if playCard[1] == '+':
-    if playCard[2] == '2' or playCard[2] == '4':
-      turnNum = turnNum + (reverse*1)
-  
-      #user is hit
-      if currentTurn() == 'user':
-        if '+' in playerDeck:
-          defend = input('You have a +2 or +4 card! Defend or draw?: ').lower()
+  global forceDraw
 
-          if defend == 'defend':
-            turnNum = turnNum + (reverse*1)
+  #loop back when a player has successfully defended a plus card
+  defended = False
+  
+  while defended:
+    plusDetected = False
+    if playCard[1] == '+':
+      if playCard[2] == '2' or playCard[2] == '4':
+        turnNum = turnNum + (reverse*1)
+        forceDraw = int(playCard[2])
+    
+        #user is hit
+        if currentTurn() == 'user':
+          validResponse = False
+          for x in range(0, len(cpuDeck)):
+            if '+' in cpuDeck[0+x][1]:
+              plusDetected = True
+
+            if plusDetected == True:
+              while not validResponse:
+                
+                defend = input('You have a +2 or +4 card! Defend or draw?: ').lower()
+    
+                if defend == 'defend':
+                  validResponse = True
+                  turnNum = turnNum + (reverse*1)
+                  
+                  while not plusTrue:
+                    defence = input('Play the +2 or +4 card!: ')
+                    if defence in playerDeck and defence[1] == '+':
+                      playerDeck.remove(defence)
+                      print('You played', defence)
+                      forceDraw = forceDraw + int(defence[2])
+                      turnNum = turnNum + (reverse*1)
+                      plusTrue = True
+                      defended = True
+                      
+                    else:
+                      print('That is not a valid card! Please try again!')
+                      plusTrue = False                  
+                  
+            else:
+              for x in range(0, forceDraw):
+                cDeck = random.choice(deck)
+                playerDeck.append(cDeck)
+                defended = False
+                print('You drew', cDeck)
+              print('Your turn was skipped!')
             
-        else:
-          for x in range(0, int(playCard[2])):
-          cDeck = random.choice(deck)
-          playerDeck.append(cDeck)
-          print('You drew', cDeck)
-        print('Your turn was skipped!')
-        
-      #CPU1 is hit
-      if currentTurn() == 'CPU1':
-        for x in range(0,int(playCard[2])):
-          cDeck = random.choice(deck)
-          cpu1Deck.append(cDeck)
-        print('\nCPU1 drew', int(playCard[2]), 'cards!')
-        print("CPU1 has", len(cpu1Deck), "card(s)")
-  
-      #CPU2 is hit
-      if currentTurn() == 'CPU2':
-        for x in range(0,int(playCard[2])):
-          cDeck = random.choice(deck)
-          cpu2Deck.append(cDeck)
-        print('\nCPU2 drew', int(playCard[2]), 'cards!')
-        print("CPU2 has", len(cpu2Deck), "card(s)")
-  
-      #CPU3 is hit
-      if currentTurn() == 'CPU3':
-        for x in range(0,int(playCard[2])):
-          cDeck = random.choice(deck)
-          cpu3Deck.append(cDeck)
-        print('\nCPU3 drew', int(playCard[2]), 'cards!')
-        print("CPU3 has", len(cpu3Deck), "card(s)")
-        
-      playTurn = currentTurn()
-      print(playTurn, 'had their turn skipped!')
+          #CPU1 is hit
+          if currentTurn() == 'CPU1':
+            cpuDefend(cpu1Deck)
+            
+            if defended == False:
+              for x in range(0,forceDraw):
+                cDeck = random.choice(deck)
+                cpu1Deck.append(cDeck)
+              print('\nCPU1 drew', forceDraw, 'cards!')
+              print("CPU1 has", len(cpu1Deck), "card(s)")
       
+          #CPU2 is hit
+          if currentTurn() == 'CPU2':
+            cpuDefend(cpu2Deck)
+            
+            if defended == False:
+              for x in range(0,forceDraw):
+                cDeck = random.choice(deck)
+                cpu1Deck.append(cDeck)
+              print('\nCPU1 drew', forceDraw, 'cards!')
+              print("CPU1 has", len(cpu1Deck), "card(s)")
+      
+          #CPU3 is hit
+          if currentTurn() == 'CPU3':
+            cpuDefend(cpu3Deck)
+            
+            if defended == False:
+              for x in range(0,forceDraw):
+                cDeck = random.choice(deck)
+                cpu1Deck.append(cDeck)
+              print('\nCPU1 drew', forceDraw, 'cards!')
+              print("CPU1 has", len(cpu1Deck), "card(s)")
+            
+          playTurn = currentTurn()
+          print(playTurn, 'had their turn skipped!')
+  
+def cpuDefend(cpuDeck):
+  global forceDraw
+  global turnNum
+  for x in range(0, len(cpuDeck)):
+    if '+' in cpuDeck[0+x][1]:
+      cpuDeck.remove(cpuDeck(0+x))
+      forceDraw = forceDraw + int(cpuDeck(0+x)[2])
+      turnNum = turnNum + (reverse*1)
+      defended = True
+    else:
+      defended = False
+    
 
 #enter a game loop that loops back after the game ends and the user wishes to play again
 while gameExit == True:
@@ -318,6 +367,7 @@ while gameExit == True:
     cDeck = random.choice(deck)
     cpu3Deck.append(cDeck)
 
+  playerDeck.append('R+2')
   #turn the user's deck list into strings 
   pDeck = ', '.join(str(x) for x in playerDeck)
 
@@ -327,13 +377,12 @@ while gameExit == True:
 
   #tell user what card is on top of the playing pile
 
-  face = str(random.choice(deck))
+  face = 'B+2'#str(random.choice(deck))
   print("The current card on the playing pile is:", face)
 
   while gameLoop:
     if currentTurn() == 'user':
 
-      played = False
       #tell the user it is their turn, their deck and the playing pile
       pDeck = ', '.join(str(x) for x in playerDeck)
       print('\nIt is your turn!')
