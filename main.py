@@ -248,8 +248,9 @@ def skip(playCard):
   playTurn = currentTurn()
   
   if playCard[1] == 'S':
-    turnNum = turnNum + (reverse*1)
     print(playTurn, 'played', playCard, 'which is a skip card!')
+    turnNum = turnNum + (reverse*1)
+    playTurn = currentTurn()
     print(playTurn, 'had their turn skipped!')
 
 #define reverse cards (the order of the players reverse)
@@ -415,7 +416,8 @@ def cpuDefend(cpuDeck):
     if '+' in cpuDeck[0+x][1]:
       time.sleep(0.5)
       forceDraw = forceDraw + int(cpuDeck[0+x][2])
-      print(playTurn, 'played', cpuDeck[0+x], 'to defend the plus card!\n')
+      print('\n')
+      print(playTurn, 'played', cpuDeck[0+x], 'to defend the plus card!')
       face = cpuDeck[0+x]
       cpuDeck.remove(cpuDeck[0+x])
       defended = True
@@ -458,12 +460,6 @@ while gameExit == True:
     cDeck = random.choice(deck)
     cpu3Deck.append(cDeck)
 
-  playerDeck.append('R+2')
-  playerDeck.append('B+2')
-
-  # cpu1Deck.append('WC')
-  cpu2Deck.append('G+2')
-  cpu3Deck.append('G+2')
   #turn the user's deck list into strings 
   pDeck = ', '.join(str(x) for x in playerDeck)
 
