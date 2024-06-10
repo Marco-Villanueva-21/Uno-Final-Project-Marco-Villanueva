@@ -160,7 +160,7 @@ def cpuTurn(cpuDeck):
     add = random.choice(deck)
     cpuDeck.append(add)
     print(playTurn, 'drew a card!')
-    drawnCard(add)
+    drawnCardCPU(add)
   turnNum = turnNum + (1*reverse)
 
 #define the play again checker at the end of the game
@@ -582,8 +582,8 @@ while gameExit == True:
 
     #enter CPU2's turn if currentTurn function returns CPU2
     elif currentTurn() == 'CPU2':
+      time.sleep(1)
       print("\nIt is CPU2's turn!")
-      time.sleep(0.5)
       print("CPU2 has", len(cpu2Deck), "card(s)")
       cpuTurn(cpu2Deck)
 
@@ -596,8 +596,8 @@ while gameExit == True:
 
     #enter CPU3's turn if currentTurn function returns CPU3
     elif currentTurn() == 'CPU3':
+      time.sleep(1)
       print("\nIt is CPU3's turn!")
-      time.sleep(0.5)
       print("CPU3 has", len(cpu3Deck), "card(s)")
       cpuTurn(cpu3Deck)
 
