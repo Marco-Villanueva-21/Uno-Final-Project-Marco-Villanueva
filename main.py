@@ -69,7 +69,7 @@ def checkValid(playCard, face):
     return False
 
 #function for drawing a card
-def drawnCard(add, deck):
+def drawnCard(add, Deck):
   global face
 
   #enter a loop that loops back when the user inputs an invalid response
@@ -87,7 +87,7 @@ def drawnCard(add, deck):
         #check if the drawn card is a wild+4 card
         if add[0] == 'W' and len(add) == 3:
           face = wild(add)
-          plus(add, deck)
+          plus(add, Deck)
 
         #check if the drawn card is a wild card
         elif add[0] == 'W':
@@ -96,15 +96,16 @@ def drawnCard(add, deck):
           #check if the second character is in the special list
         elif add[1] in special: 
           print('You played a special card!')
-          skip(add, deck)
-          rev(add, deck)
-          plus(add, deck)
+          skip(add, Deck)
+          rev(add, Deck)
+          plus(add, Deck)
 
         #basic card is played
         else:
           print('You played', add)
           time.sleep(1)
           print('The current card on the playing pile is:', face)
+          Deck.remove(add)
         validResponse = True
   
       #user asks to skip
