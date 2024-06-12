@@ -60,7 +60,7 @@ def currentTurn():
   return playTurn
   
 #function to check if the user's deck has a valid card to play
-def checkValid(playCard):
+def checkValid(playCard, face):
 
   #if the playCard matches the face card or the playCard is a wild card, the card is valid
   if playCard[0] == face[0] or playCard[1] == face[1] or playCard[0] == 'W':
@@ -77,11 +77,11 @@ def drawnCard(add, deck):
   while not validResponse:
     
     #check if the drawn card is valid
-    if checkValid(add):
+    if checkValid(add, face):
       PD = input('You drew a valid card! Play or skip?: ').lower()
   
       #player asks to play
-      if PD == 'play':
+      if PD == 'play' or PD == 'p':
         face = add
 
         #check if the drawn card is a wild+4 card
@@ -108,7 +108,7 @@ def drawnCard(add, deck):
         validResponse = True
   
       #user asks to skip
-      elif PD == 'skip':
+      elif PD == 'skip' or PD == 's':
         print('You skipped your turn!')
         validResponse = True
 
@@ -154,7 +154,7 @@ def cpuTurn(cpuDeck):
   
   #check each card in the CPU's deck
   for x in range (0, len(cpuDeck)):
-    if checkValid(cpuDeck[0+x]):
+    if checkValid(cpuDeck[0+x], face):
       valid = True
       validCards.append(cpuDeck[0+x])
 
@@ -188,32 +188,47 @@ def cpuTurn(cpuDeck):
     cpuDeck.append(add)
     time.sleep(1)
     print(playTurn, 'drew a card!')
-    drawnCardCPU(add)
-    cpuDeck.remove(add)
-  cpuUNO(cpuDeck)
+    drawnCardCPU(add, cpuDeck)
+  cpuUNO(cpuDeck, playTurn)
   turnNum = turnNum + (1*reverse)
 
 #have the cpu call UNO when they have one card left
-def cpuUNO(cpuDeck):
-  playTurn = currentTurn()
+def cpuUNO(cpuDeck, uno):
 
   if len(cpuDeck) == 1:
     print('\n')
-    print(playTurn, 'has UNO!\n')
+    print(uno, 'has UNO!\n')
   
 #define CPU's ability to draw a card
-def drawnCardCPU(add):
+def drawnCardCPU(add, cpuDeck):
   global playTurn
   global turnNum
+  global face
   
   playTurn = currentTurn()
 
+  if add[0] == 'W' and add[1] == '+':
+    face = cpuWild(add, cpuDeck)
+    plus(add, cpuDeck)
+
+  #check if the drawn card is a wild card
+  elif add[0] == 'W':
+    cpuWild(add, cpuDeck)
+
+  #check if the second character is in the special list and is a valid card
+  elif add[1] in special and checkValid(add, face): 
+    print(playTurn, 'played a special card!')
+    skip(add, cpuDeck)
+    rev(add, cpuDeck)
+    plus(add, cpuDeck)
+
   #if a valid card is found, the CPU will play it
-  if checkValid(add):
+  elif checkValid(add, face):
     face = add
     time.sleep(1)
     print(playTurn, 'played', add)
     time.sleep(1)
+    cpuDeck.remove(add)
     print('The current card on the playing pile is:', face)
 
   #otherwise, the CPU will skip their turn
@@ -302,7 +317,6 @@ def wild(playCard):
           playerDeck.remove(playCard)
           
         chooseColor = True
-        played = True
         return face
 
       #otherwise, tell the user they input an invalid color and loop
@@ -504,7 +518,6 @@ def cpuDefend(cpuDeck):
     if '+' in cpuDeck[0+x][1]:
       time.sleep(1)
       forceDraw = forceDraw + int(cpuDeck[0+x][2])
-      time.sleep(1)
       print('\n')
       print(playTurn, 'played', cpuDeck[0+x], 'to defend the plus card!')
       face = cpuDeck[0+x]
@@ -561,8 +574,13 @@ while gameExit:
 
   face = str(random.choice(deck))
 
+  #if the face card is a wild card, pick another random card until it is not wild
+  while face[0] == 'W':
+    face = str(random.choice(deck))
+  
   while gameLoop:
-    
+
+    #it is the user's turn
     if currentTurn() == 'User':
       played = False
       valid = False
@@ -577,7 +595,7 @@ while gameExit:
       
       #check each card in the user's deck
       for x in range (0, len(playerDeck)):
-        if checkValid(playerDeck[0+x]):
+        if checkValid(playerDeck[0+x], face):
           valid = True
           
       #if the user has a valid card, ask if they wish to play or draw
@@ -601,7 +619,8 @@ while gameExit:
               print('The current card on the playing pile is:', face)
               played = False
 
-            elif not checkValid(playCard) and playCard[0] != 'W':
+            #if the card is not a valid card, ask them to input a valid card
+            elif not checkValid(playCard, face) and playCard[0] != 'W':
               print('\nThat is an invalid card!')
               pDeck = ', '.join(str(x) for x in playerDeck)
               time.sleep(1)
@@ -617,13 +636,15 @@ while gameExit:
               if playCard[0] == 'W' and len(playCard) == 3:
                 face = wild(playCard)
                 plus(playCard, playerDeck)
+                played = True
 
               #check if the played card is a wild 
               elif playCard[0] == 'W':
                 face = wild(playCard)
+                played = True
     
               #otherwise, check if the card is playable
-              elif checkValid(playCard):
+              elif checkValid(playCard, face):
                 face = playCard
                 print('You played', playCard, '\n')
 
@@ -638,6 +659,7 @@ while gameExit:
                 if playCard[1] not in special:
                   playerDeck.remove(playCard)
 
+                #tell the user the playing pile and their deck
                 time.sleep(1)
                 print('The current card on the playing pile is:', face)
                 pDeck = ', '.join(str(x) for x in playerDeck)
@@ -668,8 +690,10 @@ while gameExit:
         drawnCard(add, playerDeck)
       turnNum = turnNum + (1*reverse)
 
+      #if the user has one card left, tell them they have UNO 
       if len(playerDeck) == 1:
         print('\nYou have UNO!\n')
+      
       #if the user reaches zero cards, display the winner and ask to play again
       if len(playerDeck) == 0:
         print('You win!')
@@ -722,4 +746,3 @@ while gameExit:
         time.sleep(1)
         playAgain = input('Would you like to play again? (Y/N): ').upper()
         playMore()
-  #make next computer player play a valid card from their deck and tell the user their placed card
