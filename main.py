@@ -145,8 +145,7 @@ def countColor(cpuDeck):
 
 #define how a CPU will play
 def cpuTurn(cpuDeck):
-  global turnNum
-  global face
+  global turnNum, face
   
   playTurn = currentTurn()
   validCards = []
@@ -202,9 +201,7 @@ def cpuUNO(cpuDeck, uno):
   
 #define CPU's ability to draw a card
 def drawnCardCPU(add, cpuDeck):
-  global playTurn
-  global turnNum
-  global face
+  global playTurn, turnNum, face
   
   playTurn = currentTurn()
 
@@ -660,12 +657,9 @@ while gameExit:
                 if playCard[1] not in special:
                   playerDeck.remove(playCard)
 
-                #tell the user the playing pile and their deck
+                #tell the user the playing pile
                 time.sleep(1)
                 print('The current card on the playing pile is:', face)
-                pDeck = ', '.join(str(x) for x in playerDeck)
-                time.sleep(1)
-                print('Your deck is:', str(pDeck))
                 played = True
       
           #if the user inputs draw, draw a card
