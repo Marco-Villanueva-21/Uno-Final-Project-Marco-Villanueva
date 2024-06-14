@@ -420,6 +420,15 @@ def plus(playCard, Deck):
                   plusTrue = True
                   defended = True
 
+                  #if the user reaches zero cards, display the winner and ask to play again
+                  if len(playerDeck) == 0:
+                    print('You win!')
+                    gameLoop = False
+                    time.sleep(1)
+                    playAgain = input('Would you like to play again? (Y/N): ').upper()
+                    playMore()
+                    return gameLoop, playAgain
+
                 #otherwise, tell the user they inputted an invalid card and loop
                 else:
                   print('That is not a valid card! Please input a plus card from your deck!')
@@ -520,6 +529,16 @@ def cpuDefend(cpuDeck):
       print(playTurn, 'played', cpuDeck[0+x], 'to defend the plus card!')
       face = cpuDeck[0+x]
       cpuDeck.remove(cpuDeck[0+x])
+
+      #if the user reaches zero cards, display the winner and ask to play again
+      if len(cpuDeck) == 0:
+        print(playTurn, 'wins!')
+        gameLoop = False
+        time.sleep(1)
+        playAgain = input('Would you like to play again? (Y/N): ').upper()
+        playMore()
+        return gameLoop, playAgain
+      
       defended = True
       cDefended = True
       turnNum = turnNum + (reverse*1)
