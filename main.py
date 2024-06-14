@@ -145,8 +145,7 @@ def countColor(cpuDeck):
 
 #define how a CPU will play
 def cpuTurn(cpuDeck):
-  global turnNum
-  global face
+  global turnNum, face
   
   playTurn = currentTurn()
   validCards = []
@@ -202,9 +201,7 @@ def cpuUNO(cpuDeck, uno):
   
 #define CPU's ability to draw a card
 def drawnCardCPU(add, cpuDeck):
-  global playTurn
-  global turnNum
-  global face
+  global playTurn, turnNum, face
   
   playTurn = currentTurn()
 
