@@ -25,25 +25,36 @@ gameExit = True
 
 #define the play again checker at the end of the game
 def playMore():
-  global playAgainCheck, playAgain, gameExit
+  global playAgainCheck, playAgain, gameExit, gameLoop, turnNum
+
+  playAgainCheck = False
 
   #enter a loop that loops back when the user inputs an invalid response
   while not playAgainCheck:
 
+    time.sleep(1)
+    playAgain = input('Would you like to play again? (Y/N): ').lower()
+
     #if the user inputs "Y", reset the game
-    if playAgain == 'Y':
+    if playAgain == 'y':
       print("Let's play again!")
       playAgainCheck = True
       gameExit = True
+      gameLoop = False
+      turnNum = 0
+      return gameExit, gameLoop, turnNum
 
     #otherwise, exit the game loop
-    elif playAgain == 'N':
+    elif playAgain == 'n':
       print('\nThanks for playing!')
       playAgainCheck = True
       gameExit = False
+      gameLoop = False
+      return gameExit, gameLoop
       
     else:
-      playAgain = False
+      print('That is not a valid response! Enter "Y" or "N"!')
+      playAgainCheck = False
       
 #decide whose turn it currently is
 def currentTurn():
@@ -198,7 +209,25 @@ def cpuUNO(cpuDeck, uno):
   if len(cpuDeck) == 1:
     print('\n')
     print(uno, 'has UNO!\n')
+
+#determine when a player wins
+def playerWin(Deck):
+  global turnNum
+
+  #if the player has zero cards in their deck they win
+  if len(Deck) == 0:
+    time.sleep(1)
+    
+    turnNum = turnNum - (reverse*1)
+    playTurn = currentTurn()
   
+    turnNum = turnNum + (reverse*1)
+
+    print(playTurn, 'wins!')
+    gameLoop = False
+    playMore()
+    return gameLoop
+
 #define CPU's ability to draw a card
 def drawnCardCPU(add, cpuDeck):
   global playTurn, turnNum, face
@@ -359,10 +388,11 @@ def rev(playCard, Deck):
     time.sleep(1)
     print('The order of the players has been reversed!')
 
-#define plus cards (2 or 4 cards are forced to be added to the next player's deck and the next player's turn is skipped)
+#define plus cards (plus cards are forced to be added to the next player's deck and the next player's turn is skipped unless the next player has a plus card to defend)
 def plus(playCard, Deck):
   global turnNum, reverse, forceDraw, face
 
+  winner = False
   playTurn = currentTurn()
 
   #check if the playCard is a plus card
@@ -373,8 +403,12 @@ def plus(playCard, Deck):
     time.sleep(1)
     print(playTurn, 'played', playCard, 'which is a plus card!')
 
+    if len(Deck) == 0:
+      playerWin(Deck)
+      return gameLoop
+
     #loop back when a player has successfully defended a plus card
-    while defended:
+    while defended and not winner:
       plusDetected = False
       face = playCard
   
@@ -382,7 +416,7 @@ def plus(playCard, Deck):
       turnNum = turnNum + (reverse*1)
   
       #user is hit
-      if currentTurn() == 'User':
+      if currentTurn() == 'User' and winner == False:
         validResponse = False
 
         #check the user's deck for a plus card
@@ -414,20 +448,28 @@ def plus(playCard, Deck):
                 #check if the played card is a plus card and in the user's deck
                 if defence in playerDeck and defence[1] == '+':
                   face = defence
+
+                  #if the played card is a plus 4, allow the user to choose the color
+                  if defence[2] == '4':
+                    wild(defence, playerDeck)
+
+                  #remove the played card from the deck and add to force draw
                   playerDeck.remove(defence)
                   print('You played', defence)
                   forceDraw = forceDraw + int(defence[2])
                   plusTrue = True
                   defended = True
 
+                  #check if the cpu has UNO
+                  if len(playerDeck) == 1:
+                    time.sleep(1)
+                    print('\nYou have UNO!\n')
+
                   #if the user reaches zero cards, display the winner and ask to play again
                   if len(playerDeck) == 0:
-                    print('You win!')
-                    gameLoop = False
-                    time.sleep(1)
-                    playAgain = input('Would you like to play again? (Y/N): ').upper()
-                    playMore()
-                    return gameLoop, playAgain
+                    playerWin(playerDeck)
+                    winner = True
+                    return gameLoop
 
                 #otherwise, tell the user they inputted an invalid card and loop
                 else:
@@ -464,7 +506,7 @@ def plus(playCard, Deck):
           print('\nYou drew', forceDraw, 'cards in total! Yikes!')
           
       #CPU1 is hit
-      if defended and currentTurn() == 'CPU1':
+      if defended and currentTurn() == 'CPU1' and winner == False:
           cpu1Defended = cpuDefend(cpu1Deck)
 
           #if CPU1 fails to defend, force to draw and skip their turn
@@ -479,7 +521,7 @@ def plus(playCard, Deck):
             print("CPU1 has", len(cpu1Deck), "card(s)")
     
       #CPU2 is hit
-      if defended and currentTurn() == 'CPU2':
+      if defended and currentTurn() == 'CPU2' and winner == False:
           cpu2Defended = cpuDefend(cpu2Deck)
 
           #if CPU2 fails to defend, force to draw and skip their turn
@@ -494,7 +536,7 @@ def plus(playCard, Deck):
             print("CPU2 has", len(cpu2Deck), "card(s)")
   
       #CPU3 is hit
-      if defended and currentTurn() == 'CPU3':
+      if defended and currentTurn() == 'CPU3' and winner == False:
           cpu3Defended = cpuDefend(cpu3Deck)
 
           #if CPU3 fails to defend, force to draw and skip their turn
@@ -523,21 +565,27 @@ def cpuDefend(cpuDeck):
     
     #play the first plus card found if possible
     if '+' in cpuDeck[0+x][1]:
-      time.sleep(1)
       forceDraw = forceDraw + int(cpuDeck[0+x][2])
+      time.sleep(1)
       print('\n')
       print(playTurn, 'played', cpuDeck[0+x], 'to defend the plus card!')
       face = cpuDeck[0+x]
-      cpuDeck.remove(cpuDeck[0+x])
 
-      #if the user reaches zero cards, display the winner and ask to play again
+      #if the played card is a plus 4, allow the player to choose the color
+      if cpuDeck[0+x][2] == '4':
+        cpuWild(cpuDeck[0+x], cpuDeck)
+
+      #remove played card from the player's deck
+      cpuDeck.remove(cpuDeck[0+x])
+      
+      #check if the cpu has UNO
+      cpuUNO(cpuDeck, playTurn)
+
+      #if the cpu reaches zero cards, display the winner and ask to play again
       if len(cpuDeck) == 0:
-        print(playTurn, 'wins!')
-        gameLoop = False
-        time.sleep(1)
-        playAgain = input('Would you like to play again? (Y/N): ').upper()
-        playMore()
-        return gameLoop, playAgain
+        playerWin(cpuDeck)
+        winner = True
+        return gameLoop, winner
       
       defended = True
       cDefended = True
@@ -597,8 +645,8 @@ while gameExit:
   
   while gameLoop:
 
-    #it is the user's turn
-    if currentTurn() == 'User':
+    #check if it is the user's turn
+    if currentTurn() == 'User'  and gameLoop:
       played = False
       valid = False
 
@@ -703,18 +751,15 @@ while gameExit:
         print('You drew a', add)
         drawnCard(add, playerDeck)
       turnNum = turnNum + (1*reverse)
+      print(turnNum)
 
       #if the user has one card left, tell them they have UNO 
-      if len(playerDeck) == 1:
+      if len(playerDeck) == 1  and gameLoop:
+        time.sleep(1)
         print('\nYou have UNO!\n')
       
       #if the user reaches zero cards, display the winner and ask to play again
-      if len(playerDeck) == 0:
-        print('You win!')
-        gameLoop = False
-        time.sleep(1)
-        playAgain = input('Would you like to play again? (Y/N): ').upper()
-        playMore()
+      playerWin(playerDeck)
 
     #enter CPU1's turn if currentTurn function returns CPU1
     elif currentTurn() == 'CPU1':
@@ -724,12 +769,7 @@ while gameExit:
       cpuTurn(cpu1Deck)
 
       #if CPU1 reaches zero cards, display the winner and ask to play again
-      if len(cpu1Deck) == 0:
-        print('CPU1 wins!')
-        gameLoop = False
-        time.sleep(1)
-        playAgain = input('Would you like to play again? (Y/N): ').upper()
-        playMore()
+      playerWin(cpu1Deck)
 
     #enter CPU2's turn if currentTurn function returns CPU2
     elif currentTurn() == 'CPU2':
@@ -739,24 +779,14 @@ while gameExit:
       cpuTurn(cpu2Deck)
 
       #if CPU2 reaches zero cards, display the winner and ask to play again
-      if len(cpu2Deck) == 0:
-        print('CPU2 wins!')
-        gameLoop = False
-        time.sleep(1)
-        playAgain = input('Would you like to play again? (Y/N): ').upper()
-        playMore()
+      playerWin(cpu2Deck)
 
     #enter CPU3's turn if currentTurn function returns CPU3
-    elif currentTurn() == 'CPU3':
+    elif currentTurn() == 'CPU3' and gameLoop:
       time.sleep(1)
       print("\nIt is CPU3's turn!")
       print("CPU3 has", len(cpu3Deck), "card(s)")
       cpuTurn(cpu3Deck)
 
       #if the CPU3 reaches zero cards, display the winner and ask to play again
-      if len(cpu3Deck) == 0:
-        print('CPU3 wins!')
-        gameLoop = False
-        time.sleep(1)
-        playAgain = input('Would you like to play again? (Y/N): ').upper()
-        playMore()
+      playerWin(cpu3Deck)
